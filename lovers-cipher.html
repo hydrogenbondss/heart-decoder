@@ -1,0 +1,1897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Heart Decoder | Interactive Love Archetype Quiz</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap');
+        
+        :root {
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --primary: #667eea;
+            --secondary: #f093fb;
+            --accent: #4facfe;
+            --text-dark: #2d3748;
+            --text-light: #718096;
+            --success: #48bb78;
+            --warning: #ed8936;
+            --danger: #f56565;
+            --love-red: #ff6b6b;
+            --love-pink: #ff8e8e;
+            --love-purple: #c084fc;
+            --love-blue: #60a5fa;
+            --love-gold: #fbbf24;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Floating Hearts Background Animation */
+        .hearts-bg {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 20px;
+            opacity: 0.3;
+            animation: float-up 15s infinite;
+        }
+
+        @keyframes float-up {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.3;
+            }
+            90% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Landing Page */
+        .landing {
+            text-align: center;
+            padding: 60px 20px;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        h1 {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 2.8rem;
+            color: white;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 40px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+
+        .feature-pills {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        .pill {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .start-btn {
+            background: white;
+            color: var(--primary);
+            border: none;
+            padding: 18px 50px;
+            font-size: 1.2rem;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .start-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Creator Credit - Landing Page */
+        .creator-credit {
+            margin-top: 50px;
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.6);
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        .creator-credit span {
+            color: rgba(255,255,255,0.9);
+            font-weight: 700;
+        }
+
+        /* Quiz Container */
+        .quiz-container {
+            display: none;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        .progress-container {
+            background: rgba(255,255,255,0.2);
+            height: 8px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: white;
+            border-radius: 10px;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        .progress-text {
+            text-align: center;
+            color: white;
+            margin-bottom: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .question-card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            animation: cardEnter 0.5s ease-out;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        @keyframes cardEnter {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .scenario-label {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+
+        .question-text {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1.4rem;
+            color: var(--text-dark);
+            margin-bottom: 30px;
+            line-height: 1.5;
+            font-weight: 600;
+        }
+
+        .scenario-details {
+            background: #f7fafc;
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 0 12px 12px 0;
+            font-size: 1rem;
+            color: var(--text-light);
+            line-height: 1.6;
+            font-style: italic;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            background: #f7fafc;
+            border: 2px solid transparent;
+            padding: 20px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option:hover {
+            background: #edf2f7;
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            background: linear-gradient(135deg, #667eea15, #764ba215);
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+
+        .option-emoji {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .option-text {
+            font-size: 1rem;
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        .option.selected .option-text {
+            color: var(--primary);
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 14px 32px;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.9);
+            color: var(--text-dark);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Results Container */
+        .results-container {
+            display: none;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .result-hero {
+            text-align: center;
+            padding: 40px 20px;
+            background: var(--card-bg);
+            border-radius: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(180deg); }
+        }
+
+        .result-mascot {
+            font-size: 6rem;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .archetype-name {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 2.5rem;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+
+        .archetype-tagline {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            font-style: italic;
+            position: relative;
+            z-index: 1;
+        }
+
+        .relationship-badge {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+        }
+
+        .relationship-badge.single {
+            background: linear-gradient(135deg, #ffecd2, #fcb69f);
+            color: #8b4513;
+        }
+
+        .relationship-badge.taken {
+            background: linear-gradient(135deg, #d4fc79, #96e6a1);
+            color: #2d5a27;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        @media (min-width: 640px) {
+            .result-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .result-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .result-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .result-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+        }
+
+        .result-card.love::before { background: linear-gradient(90deg, #ff6b6b, #ff8e8e); }
+        .result-card.sex::before { background: linear-gradient(90deg, #f093fb, #f5576c); }
+        .result-card.attach::before { background: linear-gradient(90deg, #4facfe, #00f2fe); }
+        .result-card.type::before { background: linear-gradient(90deg, #fa709a, #fee140); }
+        .result-card.single::before { background: linear-gradient(90deg, #a8edea, #fed6e3); }
+        .result-card.weapon::before { background: linear-gradient(90deg, #ffecd2, #fcb69f); }
+        .result-card.win::before { background: linear-gradient(90deg, #667eea, #764ba2); }
+
+        .result-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .result-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-light);
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .result-title {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1.4rem;
+            color: var(--text-dark);
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .result-description {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--text-light);
+        }
+
+        .insight-box {
+            background: linear-gradient(135deg, #667eea15, #764ba215);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px 0;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .insight-title {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1.3rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Compatibility Section */
+        .compatibility-section {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .compatibility-title {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            color: var(--text-dark);
+            text-align: center;
+        }
+
+        .compatibility-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 640px) {
+            .compatibility-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .compat-card {
+            padding: 25px;
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .compat-card.best {
+            background: linear-gradient(135deg, #d4fc79, #96e6a1);
+            color: #2d5a27;
+        }
+
+        .compat-card.good {
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            color: #4a5568;
+        }
+
+        .compat-card.challenging {
+            background: linear-gradient(135deg, #ffecd2, #fcb69f);
+            color: #8b4513;
+        }
+
+        .compat-card.avoid {
+            background: linear-gradient(135deg, #ff9a9e, #fecfef);
+            color: #742a2a;
+        }
+
+        .compat-emoji {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .compat-type {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .compat-name {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .compat-desc {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            opacity: 0.9;
+        }
+
+        .relationship-insight {
+            background: linear-gradient(135deg, #ffecd2, #fcb69f);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px 0;
+            border: 2px solid rgba(251, 182, 143, 0.3);
+        }
+
+        .relationship-insight.taken {
+            background: linear-gradient(135deg, #d4fc79, #96e6a1);
+            border-color: rgba(150, 230, 161, 0.3);
+        }
+
+        /* QR Code Section */
+        .qr-section {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 40px;
+            margin: 30px 0;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .qr-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+        }
+
+        .qr-title {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .qr-subtitle {
+            color: var(--text-light);
+            margin-bottom: 25px;
+            font-size: 1rem;
+        }
+
+        .qr-container {
+            display: inline-block;
+            position: relative;
+            padding: 20px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .qr-frame {
+            position: relative;
+            display: inline-block;
+        }
+
+        .qr-code {
+            width: 200px;
+            height: 200px;
+            display: block;
+            border-radius: 12px;
+        }
+
+        .qr-heart {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 2rem;
+            animation: pulse 2s infinite;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        .qr-instructions {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .qr-local-warning {
+            background: #fff5f5;
+            border: 2px dashed #fc8181;
+            color: #c53030;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        .qr-local-warning strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #742a2a;
+        }
+
+        /* Result Footer Credit */
+        .result-footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-top: 20px;
+        }
+
+        .result-footer span {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .share-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .share-btn {
+            padding: 12px 24px;
+            border-radius: 50px;
+            border: none;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .share-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .restart-btn {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .restart-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 100px 20px;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .hidden { display: none !important; }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            h1 { font-size: 2rem; }
+            .question-card { padding: 25px; }
+            .archetype-name { font-size: 1.8rem; }
+            .result-mascot { font-size: 4rem; }
+            .qr-code { width: 180px; height: 180px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Floating Hearts Background -->
+<div class="hearts-bg" id="heartsBg"></div>
+
+<div class="container">
+    <!-- Landing Page -->
+    <div class="landing" id="landing">
+        <div class="logo">💝</div>
+        <h1>The Heart Decoder</h1>
+        <p class="subtitle">
+            16 intimate scenarios. 1 love archetype.<br>
+            Discover your romantic DNA, attachment style, and your perfect (and worst) matches.
+        </p>
+        <div class="feature-pills">
+            <span class="pill">💫 Interactive</span>
+            <span class="pill">🔮 Detailed Analysis</span>
+            <span class="pill">❤️ Compatibility Matching</span>
+        </div>
+        <button class="start-btn" onclick="startQuiz()">Start Your Journey 💕</button>
+        
+        <div class="creator-credit">
+            created by <span>@hydrogenbonds</span>
+        </div>
+    </div>
+
+    <!-- Quiz Section -->
+    <div class="quiz-container" id="quiz">
+        <div class="progress-text" id="progressText">Question 1 of 16</div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar" style="width: 6%"></div>
+        </div>
+        
+        <div class="question-card" id="questionCard">
+            <div class="scenario-label" id="scenarioLabel">Scenario</div>
+            <div class="question-text" id="questionText"></div>
+            <div class="scenario-details" id="scenarioDetails"></div>
+            <div class="options" id="optionsContainer"></div>
+        </div>
+
+        <div class="nav-buttons">
+            <button class="btn btn-secondary" id="prevBtn" onclick="previousQuestion()" disabled>← Back</button>
+            <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>Next →</button>
+        </div>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading" id="loading">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Decoding your heart...</div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="results-container" id="results">
+        <div class="result-hero">
+            <div class="result-mascot" id="resultMascot">🧩</div>
+            <h2 class="archetype-name" id="archetypeName">The Puzzle Solver</h2>
+            <p class="archetype-tagline" id="archetypeTagline">"You treat love like a mystery to be solved."</p>
+            <div class="relationship-badge" id="relationshipBadge">Single Mode</div>
+        </div>
+
+        <div class="result-grid">
+            <div class="result-card love">
+                <div class="result-icon">💌</div>
+                <div class="result-label">Your Love Language</div>
+                <div class="result-title" id="loveTitle">Quality Time</div>
+                <div class="result-description" id="loveDesc">You don't just want someone nearby—you want them fully present.</div>
+            </div>
+
+            <div class="result-card sex">
+                <div class="result-icon">🔥</div>
+                <div class="result-label">Intimacy Style</div>
+                <div class="result-title" id="sexTitle">Emotional-First</div>
+                <div class="result-description" id="sexDesc">Physical chemistry without mental connection feels hollow to you.</div>
+            </div>
+
+            <div class="result-card attach">
+                <div class="result-icon">🧲</div>
+                <div class="result-label">Attachment Style</div>
+                <div class="result-title" id="attachTitle">Anxious-Avoidant</div>
+                <div class="result-description" id="attachDesc">You crave closeness but panic when you get it.</div>
+            </div>
+
+            <div class="result-card type">
+                <div class="result-icon">🎯</div>
+                <div class="result-label">Your Ideal Match</div>
+                <div class="result-title" id="typeTitle">The Secure Anchor</div>
+                <div class="result-description" id="typeDesc">Someone patient enough to reassure you without resentment.</div>
+            </div>
+        </div>
+
+        <div class="insight-box" id="singleInsightBox">
+            <div class="insight-title">💔 Why You've Been Single</div>
+            <div id="singleReason">Your standards aren't high—they're defensive.</div>
+        </div>
+
+        <div class="relationship-insight hidden" id="relationshipInsightBox">
+            <div class="insight-title">💞 Relationship Dynamics</div>
+            <div id="relationshipInsight">You tend to...</div>
+        </div>
+
+        <div class="insight-box">
+            <div class="insight-title">⚔️ Your Secret Weapon</div>
+            <div id="secretWeapon">Your intensity makes people feel like the protagonist.</div>
+        </div>
+
+        <div class="insight-box">
+            <div class="insight-title">🗝️ How To Win Your Heart</div>
+            <div id="winHeart">Consistency without pressure.</div>
+        </div>
+
+        <!-- Compatibility Section -->
+        <div class="compatibility-section">
+            <div class="compatibility-title">💫 Your Compatibility Matrix</div>
+            <p style="text-align: center; color: var(--text-light); margin-bottom: 20px;">
+                Based on your archetype, here are your best and most challenging matches
+            </p>
+            
+            <div class="compatibility-grid" id="compatibilityGrid">
+                <!-- Filled by JavaScript -->
+            </div>
+        </div>
+
+        <!-- QR Code Section -->
+        <div class="qr-section">
+            <div class="qr-title">📱 Share the Love</div>
+            <div class="qr-subtitle">Scan this code to take the quiz</div>
+            
+            <div class="qr-container">
+                <div class="qr-frame">
+                    <img id="qrCode" class="qr-code" src="" alt="QR Code">
+                    <div class="qr-heart">💖</div>
+                </div>
+            </div>
+
+            <div id="qrLocalWarning" class="qr-local-warning hidden">
+                <strong>⚠️ Upload to share!</strong>
+                You're viewing this locally. To get a shareable QR code, upload this file to Netlify or GitHub Pages first, then scan the new QR code generated from that link.
+            </div>
+
+            <div class="qr-instructions">
+                💡 <strong>Screenshot this page</strong> and share on Instagram Stories, or let friends scan the code to discover their archetype!
+            </div>
+        </div>
+
+        <!-- Result Footer -->
+        <div class="result-footer">
+            created by <span>@hydrogenbonds</span>
+        </div>
+
+        <div class="share-buttons">
+            <button class="share-btn restart-btn" onclick="restartQuiz()">🔄 Retake Quiz</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Create floating hearts background
+function createHearts() {
+    const container = document.getElementById('heartsBg');
+    const hearts = ['💕', '💖', '💗', '💓', '💝', '💘', '💞'];
+    
+    for (let i = 0; i < 20; i++) {
+        const heart = document.createElement('div');
+        heart.className = 'heart';
+        heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+        heart.style.left = Math.random() * 100 + '%';
+        heart.style.animationDelay = Math.random() * 15 + 's';
+        heart.style.fontSize = (Math.random() * 20 + 15) + 'px';
+        container.appendChild(heart);
+    }
+}
+
+createHearts();
+
+// Relationship status question is first
+const questions = [
+    {
+        scenario: "Status Check",
+        text: "First things first—what's your current situation?",
+        details: "This helps us tailor your results and compatibility advice.",
+        options: [
+            { 
+                text: "Single and dating (or not dating, but definitely single)", 
+                scores: { status: "single" } 
+            },
+            { 
+                text: "In a relationship / Married / Partnered up", 
+                scores: { status: "taken" } 
+            },
+            { 
+                text: "It's complicated / Situationship", 
+                scores: { status: "complicated" } 
+            },
+            { 
+                text: "Recently broke up (within 3 months), still processing", 
+                scores: { status: "healing" } 
+            }
+        ]
+    },
+    {
+        scenario: "The Crisis",
+        text: "It's 2 AM. You're having a panic attack about work. Your partner is asleep next to you. What do you actually want them to do?",
+        details: "You've been staring at the ceiling for an hour, heart racing. They haven't noticed you're awake.",
+        options: [
+            { 
+                text: "Wake them up and hold you in silence—no talking, just physical presence", 
+                scores: { love: "Physical Touch", attach: "Anxious", trait: "External" } 
+            },
+            { 
+                text: "Make you tea and help you make a plan for tomorrow morning", 
+                scores: { love: "Acts of Service", attach: "Secure", trait: "ProblemSolver" } 
+            },
+            { 
+                text: "Tell you it's going to be okay and validate that your stress makes sense", 
+                scores: { love: "Words", attach: "Anxious", trait: "Verbal" } 
+            },
+            { 
+                text: "Leave you alone in the dark to process—you don't want to burden them", 
+                scores: { love: "Space", attach: "Avoidant", trait: "Internal" } 
+            }
+        ]
+    },
+    {
+        scenario: "The Attraction",
+        text: "You meet someone at a friend's party. What specific moment makes your stomach flip?",
+        details: "The conversation has been polite. Then something happens. What is it?",
+        options: [
+            { 
+                text: "They catch you staring and hold eye contact 2 seconds too long", 
+                scores: { type: "Intensity", sex: "Visual", trigger: "Tension" } 
+            },
+            { 
+                text: "They reference a book you love that nobody else has heard of", 
+                scores: { type: "Intellectual", sex: "Mental", trigger: "Recognition" } 
+            },
+            { 
+                text: "They touch your arm while laughing at your joke", 
+                scores: { type: "Physical", sex: "Touch", trigger: "Contact" } 
+            },
+            { 
+                text: "They mention they're leaving town in 3 months and 'not looking for anything serious'", 
+                scores: { type: "Unavailable", sex: "Chase", trigger: "Fear" } 
+            }
+        ]
+    },
+    {
+        scenario: "The Routine",
+        text: "You've been dating 6 months. It's a Tuesday. What does your ideal evening look like?",
+        details: "You both get home from work at 7 PM. The night is yours.",
+        options: [
+            { 
+                text: "Cooking dinner together while talking about your days, then cuddling on the couch", 
+                scores: { love: "Quality Time", sex: "Intimacy", lifestyle: "Domestic" } 
+            },
+            { 
+                text: "Separate activities in the same room—you read, they game, occasionally touching feet", 
+                scores: { love: "Proximity", sex: "Comfort", lifestyle: "Independent" } 
+            },
+            { 
+                text: "Spontaneous adventure—dropping everything to try a new restaurant across town", 
+                scores: { love: "Novelty", sex: "Excitement", lifestyle: "Spontaneous" } 
+            },
+            { 
+                text: "Intense conversation about your future together, then passionate sex", 
+                scores: { love: "Depth", sex: "Emotional", lifestyle: "Intense" } 
+            }
+        ]
+    },
+    {
+        scenario: "The Bedroom",
+        text: "During sex, what makes you feel most connected to your partner?",
+        details: "Think about the specific moment or action that makes you think 'I could fall for this person.'",
+        options: [
+            { 
+                text: "Eye contact that doesn't break even when it gets awkward", 
+                scores: { sex: "Intimacy", bedroom: "Vulnerable", need: "Seen" } 
+            },
+            { 
+                text: "Them taking charge and telling you exactly what to do", 
+                scores: { sex: "Power", bedroom: "Submissive", need: "Surrender" } 
+            },
+            { 
+                text: "Making them lose control—their pleasure is your pleasure", 
+                scores: { sex: "Giving", bedroom: "Dominant", need: "Control" } 
+            },
+            { 
+                text: "Laughter when something goes wrong—feeling safe to be imperfect", 
+                scores: { sex: "Comfort", bedroom: "Playful", need: "Safety" } 
+            }
+        ]
+    },
+    {
+        scenario: "The Conflict",
+        text: "You had a fight. They said something hurtful. 3 days later, they apologize with...",
+        details: "You're still hurt but want to move forward. What gesture would actually work?",
+        options: [
+            { 
+                text: "A handwritten letter explaining exactly why they were wrong and how they'll change", 
+                scores: { love: "Words", conflict: "Processing", need: "Understanding" } 
+            },
+            { 
+                text: "They show up at your door with your favorite food and a movie", 
+                scores: { love: "Service", conflict: "Action", need: "Care" } 
+            },
+            { 
+                text: "They give you space for a week, then slowly start texting memes again like normal", 
+                scores: { love: "Space", conflict: "Avoidance", need: "Reset" } 
+            },
+            { 
+                text: "They grab you and kiss you mid-argument, passion overriding logic", 
+                scores: { love: "Physical", conflict: "Intensity", need: "Connection" } 
+            }
+        ]
+    },
+    {
+        scenario: "The Ex",
+        text: "Your ex—the one who really hurt you—texts 'I miss you' at midnight. What's your first instinct?",
+        details: "It's been 8 months. You've mostly moved on. But that text hits different.",
+        options: [
+            { 
+                text: "Immediate anxiety spike—block them and feel sick for 3 hours", 
+                scores: { pattern: "Triggered", wound: "Abandonment", strength: "Boundary" } 
+            },
+            { 
+                text: "Screenshot it and send to 3 friends asking what to do", 
+                scores: { pattern: "Seeking", wound: "Validation", strength: "Community" } 
+            },
+            { 
+                text: "Feel a smug satisfaction that they're suffering, ignore it", 
+                scores: { pattern: "Punishing", wound: "Ego", strength: "Control" } 
+            },
+            { 
+                text: "Draft 12 responses over 2 hours, delete them all, say nothing", 
+                scores: { pattern: "Ruminating", wound: "Closure", strength: "Restraint" } 
+            }
+        ]
+    },
+    {
+        scenario: "The Type",
+        text: "Describe the person you ALWAYS fall for, even when you know better:",
+        details: "Not who you want to want—the pattern you can't break.",
+        options: [
+            { 
+                text: "Brilliant but broken—artists, addicts, or people who need saving", 
+                scores: { type: "Fixer", core: "Worthiness", shadow: "Savior" } 
+            },
+            { 
+                text: "Emotionally unavailable—married, moving away, or 'not ready'", 
+                scores: { type: "Chaser", core: "Safety", shadow: "Distance" } 
+            },
+            { 
+                text: "The 'perfect on paper' person who bores you after 3 months", 
+                scores: { type: "Picker", core: "Status", shadow: "Chaos" } 
+            },
+            { 
+                text: "Your complete opposite—chaotic if you're stable, stable if you're chaotic", 
+                scores: { type: "Balancer", core: "Completion", shadow: "Attraction" } 
+            }
+        ]
+    },
+    {
+        scenario: "The Dealbreaker",
+        text: "You're on date 3. They check all boxes. Then they say...",
+        details: "What's the ONE thing that makes you mentally check out immediately?",
+        options: [
+            { 
+                text: "'I need to know where this is going'—too much pressure too soon", 
+                scores: { deal: "Speed", fear: "Entrapment", value: "Freedom" } 
+            },
+            { 
+                text: "'I don't really read books, I just watch TikTok'—shallow, can't connect", 
+                scores: { deal: "Depth", fear: "Boredom", value: "Intellect" } 
+            },
+            { 
+                text: "'My ex and I are still best friends'—competition, not fully available", 
+                scores: { deal: "Availability", fear: "Comparison", value: "Priority" } 
+            },
+            { 
+                text: "'I could never date someone who [does something you do]'", 
+                scores: { deal: "Judgment", fear: "Rejection", value: "Acceptance" } 
+            }
+        ]
+    },
+    {
+        scenario: "The Fantasy",
+        text: "Be honest: What's your secret sexual or romantic scenario?",
+        details: "The thing you think about when you're alone. No judgment.",
+        options: [
+            { 
+                text: "Being completely taken care of—cooked for, bathed, told I'm good", 
+                scores: { fantasy: "Nurtured", need: "Safety", wound: "Neglect" } 
+            },
+            { 
+                text: "Having power over someone who usually has power—boss, teacher, authority", 
+                scores: { fantasy: "Reversal", need: "Control", wound: "Powerless" } 
+            },
+            { 
+                text: "Being 'chosen' over everyone else—competition, winning someone's sole attention", 
+                scores: { fantasy: "Chosen", need: "Specialness", wound: "Ordinary" } 
+            },
+            { 
+                text: "Anonymous or risky situations—strangers, public, danger of being caught", 
+                scores: { fantasy: "Risk", need: "Excitement", wound: "Numbness" } 
+            }
+        ]
+    },
+    {
+        scenario: "The Alone Time",
+        text: "You've been together 2 years. How much alone time do you need?",
+        details: "Be honest about your actual needs, not what you think sounds healthy.",
+        options: [
+            { 
+                text: "Almost none—I want to do everything together, even grocery shopping", 
+                scores: { alone: "Low", attach: "Anxious", need: "Merge" } 
+            },
+            { 
+                text: "A few hours daily—I need to miss them to appreciate them", 
+                scores: { alone: "Moderate", attach: "Secure", need: "Balance" } 
+            },
+            { 
+                text: "Full days regularly—I get irritable if I don't have space to recharge", 
+                scores: { alone: "High", attach: "Avoidant", need: "Autonomy" } 
+            },
+            { 
+                text: "It varies wildly—sometimes I want 24/7, sometimes I want to disappear", 
+                scores: { alone: "Variable", attach: "Fearful", need: "Control" } 
+            }
+        ]
+    },
+    {
+        scenario: "The Green Flag",
+        text: "What specific small behavior makes you think 'this person is dangerous—I could actually fall'?",
+        details: "The subtle moment that hooks you more than grand gestures.",
+        options: [
+            { 
+                text: "They remember something you mentioned weeks ago in passing", 
+                scores: { green: "Attentive", core: "Seen", trigger: "Detail" } 
+            },
+            { 
+                text: "They're kind to someone who can't do anything for them (waiter, homeless person)", 
+                scores: { green: "Character", core: "Values", trigger: "Integrity" } 
+            },
+            { 
+                text: "They disagree with you respectfully—have their own strong opinions", 
+                scores: { green: "Backbone", core: "Respect", trigger: "Challenge" } 
+            },
+            { 
+                text: "They show you something vulnerable without asking for comfort", 
+                scores: { green: "Trust", core: "Intimacy", trigger: "Risk" } 
+            }
+        ]
+    },
+    {
+        scenario: "The Jealousy",
+        text: "Your partner is talking to an attractive stranger at a party. You feel...",
+        details: "Your honest gut reaction, not what you think you should feel.",
+        options: [
+            { 
+                text: "Sick to your stomach—immediately plotting how to interrupt", 
+                scores: { jealousy: "High", attach: "Anxious", wound: "Comparison" } 
+            },
+            { 
+                text: "Turned on—I like when others want what I have", 
+                scores: { jealousy: "Ego", attach: "Secure", wound: "Pride" } 
+            },
+            { 
+                text: "Nothing—if they leave me for someone else, they weren't mine anyway", 
+                scores: { jealousy: "Low", attach: "Avoidant", wound: "Detachment" } 
+            },
+            { 
+                text: "Competitive—I start charming the room to prove I'm the better catch", 
+                scores: { jealousy: "Game", attach: "Fearful", wound: "Worth" } 
+            }
+        ]
+    },
+    {
+        scenario: "The First Move",
+        text: "You're interested in someone. What's your actual strategy?",
+        details: "Not what works best—what do you actually do?",
+        options: [
+            { 
+                text: "Aggressive pursuit—I let them know immediately and clearly", 
+                scores: { strategy: "Direct", style: "Confident", fear: "Missing out" } 
+            },
+            { 
+                text: "Become their best friend—sneak in through emotional intimacy", 
+                scores: { strategy: "Friend", style: "Safe", fear: "Rejection" } 
+            },
+            { 
+                text: "Wait for them to show interest first—I won't risk embarrassment", 
+                scores: { strategy: "Guarded", style: "Defensive", fear: "Humiliation" } 
+            },
+            { 
+                text: "Flirt indirectly then pull away—if they don't chase, I know they weren't interested", 
+                scores: { strategy: "Test", style: "Manipulative", fear: "Vulnerability" } 
+            }
+        ]
+    },
+    {
+        scenario: "The Pattern",
+        text: function() { return userStatus === "single" ? "Why do you think you've really been single?" : "What's your recurring issue in relationships?"; },
+        dynamic: true,
+        details: function() { return userStatus === "single" ? "Dig deep. What's the real barrier?" : "The pattern that keeps showing up, even with different people."; },
+        options: [
+            { 
+                text: "Everyone I like doesn't like me back, and everyone who likes me bores me", 
+                scores: { single: "Mismatch", truth: "Selective", barrier: "Standards" } 
+            },
+            { 
+                text: "I get close then panic and ruin it right when it gets real", 
+                scores: { single: "Sabotage", truth: "Fear", barrier: "Intimacy" } 
+            },
+            { 
+                text: "I haven't met anyone worth taking time away from my goals/career", 
+                scores: { single: "Priority", truth: "Avoidance", barrier: "Time" } 
+            },
+            { 
+                text: "I keep choosing people who are impossible to actually have", 
+                scores: { single: "Pattern", truth: "Safety", barrier: "Availability" } 
+            }
+        ]
+    },
+    {
+        scenario: "The Breakup",
+        text: "You're being broken up with. What's your actual response?",
+        details: "Not what you wish you'd do—what you actually do.",
+        options: [
+            { 
+                text: "Beg, negotiate, promise to change—anything to stop the pain", 
+                scores: { breakup: "Pursue", wound: "Abandonment", core: "Anxious" } 
+            },
+            { 
+                text: "Agree immediately, act unfazed, then cry alone for months", 
+                scores: { breakup: "Armor", wound: "Shame", core: "Avoidant" } 
+            },
+            { 
+                text: "Anger—list everything they did wrong, make them regret it", 
+                scores: { breakup: "Attack", wound: "Ego", core: "Fearful" } 
+            },
+            { 
+                text: "Logic—ask for specific reasons, analyze what went wrong", 
+                scores: { breakup: "Process", wound: "Control", core: "Secure" } 
+            }
+        ]
+    }
+];
+
+// Archetype Profiles with Compatibility Data
+const archetypes = {
+    "The Devoted Romantic": {
+        mascot: "🌹",
+        tagline: "You don't fall often, but when you do, it's total annihilation of the self.",
+        love: {
+            title: "Words of Affirmation + Quality Time",
+            desc: "You need to HEAR it. Daily. 'I love you' isn't redundant to you—it's oxygen. But words without presence feel hollow. You want undivided attention: phones down, eyes locked, full presence. You remember anniversaries of first texts. You re-read old messages when you're sad. You probably have a note in your phone of things they've said."
+        },
+        sex: {
+            title: "Emotional-Physical Fusion",
+            desc: "For you, sex is sacramental. Casual sex feels like eating cardboard—you can do it, but why? You need eye contact, whispered 'I love you's, and the feeling of being chosen in that moment. Aftercare is non-negotiable. You probably cry after really good sex. Your kink is being emotionally wrecked by how much you trust them."
+        },
+        attach: {
+            title: "Anxious-Preoccupied",
+            desc: "You text first. You double-text. You analyze 'online' timestamps. Your anxiety isn't irrational—it's based on real patterns of inconsistency you've experienced. You fear abandonment so much that you sometimes leave first, just to control the narrative. Your phone is your torture device and your comfort object."
+        },
+        type: {
+            title: "The Secure Anchor (who can handle intensity)",
+            desc: "You need someone who texts back within 2 hours reliably, but has their own life so you don't feel smothered. They must be patient enough to reassure you without resentment, but confident enough to call you out when you're spiraling. They can't be avoidant—you'll chase until you break yourself."
+        },
+        single: "Your intensity exhausts people. You go from 0 to 100 in 2.3 seconds, and most people need a slower ramp. You also have a radar for emotionally unavailable people because they feel like puzzles to solve. You say you want stability, but stable feels boring compared to the chaos you're used to.",
+        relationship: "You tend to become the 'emotional manager' of the relationship, constantly monitoring your partner's mood and availability. You need frequent reassurance that they still love you, which can exhaust secure partners and trigger avoidant ones. Your challenge is learning to self-soothe instead of seeking constant validation.",
+        weapon: "Your memory and attention to detail. You make people feel like the protagonist of the universe. You remember their coffee order, their childhood trauma, their favorite song from 2007. It's intoxicating to be seen that completely—but it's exhausting for you to maintain without reciprocation.",
+        win: "Consistency without pressure. Show up every day without demanding they define what 'this is.' Prove you're not going to leave when they show you their mess. Patience is the only key that fits your lock. They need to survive your storms without running, and that takes months.",
+        compatibility: {
+            best: {
+                name: "The Guarded Strategist",
+                emoji: "🛡️",
+                desc: "They provide the stability you crave, you provide the warmth they need. It's a healing match if you don't chase them away with your intensity."
+            },
+            good: {
+                name: "The Intellectual Seducer",
+                emoji: "🧩",
+                desc: "Deep conversations satisfy your need for connection. They appreciate your emotional depth, but may need more alone time than you'd like."
+            },
+            challenging: {
+                name: "The Passionate Storm",
+                emoji: "⚡",
+                desc: "Too similar—you'd create a cycle of anxiety and intensity that burns you both out. Great sex, terrible stability."
+            },
+            avoid: {
+                name: "The Restless Explorer",
+                emoji: "🦋",
+                desc: "Your worst nightmare. They'll trigger your abandonment fears constantly with their need for freedom. You'll try to cling, they'll run faster."
+            }
+        }
+    },
+    
+    "The Guarded Strategist": {
+        mascot: "🛡️",
+        tagline: "You want to be chosen, but you refuse to be seen.",
+        love: {
+            title: "Acts of Service + Gifts",
+            desc: "You believe love is shown, not said. Anyone can say 'I love you'—only someone who cares fixes your tire at 2 AM. You appreciate practical help more than poetry. You probably keep a mental ledger of who has done what for you. Empty gestures annoy you; useful help melts you."
+        },
+        sex: {
+            title: "Physical Release / Performance",
+            desc: "You separate sex from emotion easily. Intimacy feels risky; sex feels manageable. You might have a high sex drive but low emotional availability. You prefer being in control or being told exactly what to do—ambiguity feels unsafe. After sex, you want space, not cuddling."
+        },
+        attach: {
+            title: "Dismissive-Avoidant",
+            desc: "Independence is your armor. You confuse self-sufficiency with strength, and need with weakness. You probably left home early, have a backup plan for everything, and pride yourself on 'not needing anyone.' When people get too close, you find flaws to create distance. You're the person who ends things 'out of nowhere' that was actually building for months."
+        },
+        type: {
+            title: "The Patient Low-Pressure Partner",
+            desc: "Someone who doesn't demand emotional transparency before you're ready. They must have their own full life so you don't feel responsible for their happiness. They need to be secure enough not to take your distance personally, but interesting enough that you actually want to come back from your alone time."
+        },
+        single: "You select people who are impossible to fully have (geographically distant, emotionally unavailable, or too busy) because it lets you chase the feeling of love without risking real vulnerability. You want the idea of a relationship more than the reality. When someone actually chooses you, you panic and find reasons they're wrong for you.",
+        relationship: "You maintain emotional distance even in committed relationships. You need more alone time than your partners expect, which they often interpret as rejection. You struggle to share your inner world, preferring to show love through actions rather than words. Your challenge is learning that vulnerability doesn't mean weakness.",
+        weapon: "Your mystery. You reveal yourself in layers that keep people coming back to peel more. You're self-sufficient in ways that make people want to care for you. You have high standards and don't suffer fools—this selectivity makes being chosen by you feel like an achievement.",
+        win: "Time without agenda. They must prove they're not going to trap you or demand emotional labor you're not ready to give. They need to be interesting enough to draw you out, but secure enough not to chase when you retreat. You need to feel free even while committed.",
+        compatibility: {
+            best: {
+                name: "The Devoted Romantic",
+                emoji: "🌹",
+                desc: "They break through your walls with persistence and warmth. You teach them independence, they teach you intimacy. Balanced and healing."
+            },
+            good: {
+                name: "The Intellectual Seducer",
+                emoji: "🧩",
+                desc: "Mental connection without emotional pressure. You can be close without feeling engulfed. They respect your space."
+            },
+            challenging: {
+                name: "The Restless Explorer",
+                emoji: "🦋",
+                desc: "Both avoidant—you'd never actually connect. Like two ghosts haunting the same house but never meeting."
+            },
+            avoid: {
+                name: "The Passionate Storm",
+                emoji: "⚡",
+                desc: "Their intensity will suffocate you. They demand more emotional availability than you can give, creating a chase dynamic that destroys you both."
+            }
+        }
+    },
+    
+    "The Passionate Storm": {
+        mascot: "⚡",
+        tagline: "You burn hot and leave either scorched earth or eternal devotion.",
+        love: {
+            title: "Physical Touch + Intensity",
+            desc: "You communicate through skin. A day without touch is a day without oxygen. But not just any touch—you need passionate, intentional contact. You probably grab your partner's face when you kiss them. You hate sleepy, lazy sex—you want performance, sweat, and intensity. You mark your territory."
+        },
+        sex: {
+            title: "High Voltage / Power Dynamics",
+            desc: "Vanilla feels like friendship to you. You need intensity, novelty, and power exchanges. You might be into rough play, role reversal, or situational taboos. You use sex to process emotions—angry sex, make-up sex, celebration sex. You need to feel consumed or consuming. Boredom is your libido killer."
+        },
+        attach: {
+            title: "Fearful-Avoidant (The Turbulent)",
+            desc: "You crave intimacy but fear engulfment. You're the push-pull master—come here, go away. You probably had inconsistent childhood caregiving, so you associate love with anxiety. You're attracted to avoidant people because the chase feels like passion, but you actually need someone secure enough to weather your storms."
+        },
+        type: {
+            title: "The Secure Rock (who can handle chaos)",
+            desc: "Someone secure enough to handle your intensity without trying to tame it or control it. They need to match your energy in the bedroom but be a safe harbor outside it. They can't be anxious—you'll feel smothered. They can't be avoidant—you'll chase and destroy yourself. They need to be steady while you're stormy."
+        },
+        single: "Your intensity exhausts people or frightens them. You feel everything at 11/10 volume, and most people prefer 4-6. You also mistake anxiety for chemistry—calm feels like boredom, so you choose chaos. You've probably been told you're 'too much' more than once.",
+        relationship: "You create intense, passionate bonds quickly but struggle with consistency. You may swing between extreme closeness and sudden distance, confusing your partner. You need someone who doesn't take your withdrawal personally but holds steady. Your challenge is learning that safety doesn't have to mean boredom.",
+        weapon: "Your raw authenticity. You live without filter, which is terrifying and magnetic simultaneously. You make people feel alive. You're fully present in a way that makes others feel seen. Your passion is contagious—even if it burns out fast.",
+        win: "They must match your energy without competing with it. You need someone who can handle your darkness without trying to fix it, and your light without being blinded. They need to stay steady when you're spinning, proving that your intensity won't break them.",
+        compatibility: {
+            best: {
+                name: "The Secure Anchor (not in the list but implied as best)",
+                name: "The Guarded Strategist",
+                emoji: "🛡️",
+                desc: "Wait, no—actually your best match is someone secure. But among these archetypes, the Devoted Romantic understands your intensity, though it may be too much. Honestly, you need someone NOT on this list—someone secure and steady."
+            },
+            good: {
+                name: "The Intellectual Seducer",
+                emoji: "🧩",
+                desc: "Mental sparring matches your physical intensity. They can keep up with your complexity without getting overwhelmed."
+            },
+            challenging: {
+                name: "The Devoted Romantic",
+                emoji: "🌹",
+                desc: "Too much intensity together. You'd create a toxic cycle of anxiety and passion. Great chemistry, terrible for mental health."
+            },
+            avoid: {
+                name: "The Healing Nurturer",
+                emoji: "🌱",
+                desc: "They'll try to fix you, you'll resent it. They need to heal, you need to storm. You'll break their heart with your chaos."
+            }
+        }
+    },
+    
+    "The Intellectual Seducer": {
+        mascot: "🧩",
+        tagline: "Your mind is your primary erogenous zone.",
+        love: {
+            title: "Deep Conversation + Shared Curiosity",
+            desc: "Small talk is torture. You fall in love through 3 AM philosophical debates and book recommendations. You need someone who challenges your ideas, teaches you things, and grows with you intellectually. Physical attraction without mental stimulation feels pointless—you'd rather be alone with a good book."
+        },
+        sex: {
+            title: "Mental Penetration",
+            desc: "The brain is your largest sex organ. Wit, wordplay, and psychological insight arouse you more than physical touch alone. You might be into power dynamics, mind games, or psychological intensity. You need to feel outsmarted or intellectually challenged. Dirty talk matters more than technique."
+        },
+        attach: {
+            title: "Secure with Avoidant Tendencies",
+            desc: "You value independence and can attach deeply if mentally stimulated, but boredom is your dealbreaker. You can go days without contact without anxiety, but you need quality engagement when you're together. You probably intellectualize your emotions—'I think I feel sad' rather than 'I feel sad.'"
+        },
+        type: {
+            title: "The Curious Challenger",
+            desc: "Someone sharp enough to challenge you, curious enough to keep up, and confident enough not to compete. They need to have their own intellectual passions. They can't be intimidated by your intelligence or try to dumb themselves down. They need to teach you things."
+        },
+        single: "You'd rather be alone than bored. Most people can't sustain the intellectual pace you require, and you can't fake interest in shallow conversation. You also might be using your high standards to mask fear of vulnerability—if no one meets the bar, you never have to risk getting hurt.",
+        relationship: "You maintain strong independence even while partnered. You need a lot of alone time to read/think/create. Your partner may feel intellectually intimidated or emotionally neglected. You show love by sharing ideas more than feelings. Your challenge is learning that emotional intimacy doesn't require intellectual performance.",
+        weapon: "Your insight. You see through people to their core, and make them feel understood for the first time. You ask the questions others are afraid to ask. You connect dots between their past and present in ways that feel like magic. You're the person someone thinks about years later when they hear a song you recommended.",
+        win: "Conversations that rearrange your mind. Make you think differently about something you thought you understood. Show consistent curiosity about your inner world. Don't try to impress you—challenge you. Intellectual humility is hotter to you than intellectual dominance.",
+        compatibility: {
+            best: {
+                name: "The Devoted Romantic",
+                emoji: "🌹",
+                desc: "They provide the emotional depth you didn't know you needed, you provide the mental stimulation they crave. You balance each other perfectly."
+            },
+            good: {
+                name: "The Guarded Strategist",
+                emoji: "🛡️",
+                desc: "You respect each other's independence. Mental connection without emotional pressure. Low maintenance, high quality."
+            },
+            challenging: {
+                name: "The Restless Explorer",
+                emoji: "🦋",
+                desc: "Both independent, but they need novelty while you need depth. You might grow apart as they seek new experiences and you seek deeper understanding."
+            },
+            avoid: {
+                name: "The Passionate Storm",
+                emoji: "⚡",
+                desc: "Too emotionally chaotic for you. You need calm to think; they ARE the storm. They'd exhaust you mentally and emotionally."
+            }
+        }
+    },
+    
+    "The Healing Nurturer": {
+        mascot: "🌱",
+        tagline: "You love broken things hoping they'll stay if you fix them.",
+        love: {
+            title: "Caregiving + Acts of Service",
+            desc: "You show love through caretaking—cooking, healing, solving, supporting. Your love language is 'let me make your life easier.' You probably know your partner's love language, medical history, and favorite comfort food. You anticipate needs before they're voiced."
+        },
+        sex: {
+            title: "Therapeutic Intimacy",
+            desc: "You use physical connection to heal and be healed. Sex is sacramental, not recreational. You need to feel like you're giving something essential. You might be drawn to 'wounded' partners who need sexual healing or confidence building. Aftercare is crucial—you need to feel appreciated, not used."
+        },
+        attach: {
+            title: "Anxious-Preoccupied (The Caretaker)",
+            desc: "You give to receive. Your caregiving is often a bid for security—hoping they'll need you enough to stay. You fear being disposable. You're attracted to 'projects' because being needed feels safer than being wanted. You probably ignore your own needs until you explode from resentment."
+        },
+        type: {
+            title: "The Grateful Receiver (who doesn't exploit)",
+            desc: "Someone who appreciates your care without exploiting it, and cares for you in return. They need to notice when you're overextending. They can't be narcissists (who'll drain you dry) or helpless (who'll never grow). They need to be healing while you heal them—mutual growth."
+        },
+        single: "You fall for projects, not people—those who need saving rather than those ready to love. You're attracted to wounded birds, addicts, or people with 'potential.' You confuse caregiving with intimacy. When you meet someone healthy, you feel bored or useless—you don't know how to just receive love.",
+        relationship: "You tend to overfunction, doing all the emotional labor while your partner underfunctions. You may feel resentful but struggle to express it. You're attracted to partners who need fixing, which creates imbalanced dynamics. Your challenge is learning to receive care without earning it through service.",
+        weapon: "Your compassion. You create safe harbor for the wounded, which is addictive to the broken. You see beauty in people's damage. You make people feel worthy of love before they've fixed themselves. You're the reason someone believes in goodness again.",
+        win: "Receiving care without asking. Someone who notices you need help before you collapse. They need to force you to rest, to accept help, to be the small one sometimes. They must prove they love you for YOU, not for what you do for them. They need to heal your 'helper's burnout.'",
+        compatibility: {
+            best: {
+                name: "The Guarded Strategist",
+                emoji: "🛡️",
+                desc: "They need your warmth, you need their stability. Just make sure you're not trying to fix them—they're not broken, just reserved."
+            },
+            good: {
+                name: "The Devoted Romantic",
+                emoji: "🌹",
+                desc: "You both give generously, creating a warm, nurturing relationship. Risk: you might exhaust yourselves trying to out-care each other."
+            },
+            challenging: {
+                name: "The Intellectual Seducer",
+                emoji: "🧩",
+                desc: "They live in their head, you live in your heart. You might feel they don't appreciate your practical care, they might feel smothered by your nurturing."
+            },
+            avoid: {
+                name: "The Passionate Storm",
+                emoji: "⚡",
+                desc: "They'll break your heart with their chaos. You'll try to heal their damage, but they create new wounds faster than you can bandage them."
+            }
+        }
+    },
+    
+    "The Restless Explorer": {
+        mascot: "🦋",
+        tagline: "You collect experiences and people, but struggle to stay.",
+        love: {
+            title: "Novelty + Adventure",
+            desc: "Routine kills your feelings. You need new experiences, new places, new dynamics. You fall in love in airports and foreign cities. You show love by planning surprises and adventures. Predictability feels like death. You probably have a fear of 'settling' or being tamed."
+        },
+        sex: {
+            title: "Experimental + Situational",
+            desc: "You need variety—new places, new roles, new dynamics. The 'same bed, same time' routine destroys your libido. You might be into semi-public situations, roleplay, or changing power dynamics. You use sex to feel alive and adventurous. Boredom is your only dealbreaker."
+        },
+        attach: {
+            title: "Avoidant-Exploratory",
+            desc: "You confuse freedom with happiness. You leave relationships when they get 'too comfortable' because comfort feels like a trap. You probably have commitment issues disguised as 'not finding the right person.' You're always waiting for the next best thing. Intimacy feels like a cage."
+        },
+        type: {
+            title: "The Fellow Wanderer",
+            desc: "Someone who wants to grow and change with you, not settle with you. They need to be excited by uncertainty, not terrified. They must have their own independent interests so you don't feel responsible for their entertainment. They need to make commitment feel like freedom, not a cage."
+        },
+        single: "You mistake novelty for compatibility. You get bored when the honeymoon phase ends, right when real intimacy starts. You probably have a history of 3-6 month relationships that 'just fizzled.' You're addicted to the dopamine of newness and haven't learned to value the oxytocin of depth.",
+        relationship: "You struggle with the 'maintenance phase' of relationships. You may sabotage good things when they become routine. You need a partner who sees commitment as a continuing adventure, not a destination. Your challenge is learning that depth can be as exciting as novelty.",
+        weapon: "Your sense of possibility. You make people feel like life with you would be an adventure. You're spontaneous in ways that break people out of ruts. You see potential everywhere. You're the person who reminds others that life is short and should be lived fully.",
+        win: "Keep evolving. Stay interesting. Don't try to pin them down—prove that choosing you means more freedom, not less. They need to feel like commitment is the ultimate adventure, not the end of adventure. You need to become more interesting the longer they know you.",
+        compatibility: {
+            best: {
+                name: "The Intellectual Seducer",
+                emoji: "🧩",
+                desc: "You both value independence and growth. They explore ideas while you explore places. Low clinginess, high mutual respect."
+            },
+            good: {
+                name: "The Guarded Strategist",
+                emoji: "🛡️",
+                desc: "Both independent, both need space. You won't suffocate each other. Just make sure you actually connect sometimes, not just coexist."
+            },
+            challenging: {
+                name: "The Devoted Romantic",
+                emoji: "🌹",
+                desc: "They need constant contact, you need constant freedom. You'll trigger their abandonment fears, they'll trigger your suffocation reflex."
+            },
+            avoid: {
+                name: "The Passionate Storm",
+                emoji: "⚡",
+                desc: "Their intensity will feel like a trap. They demand emotional availability and consistency—your two biggest struggles. Disaster waiting to happen."
+            }
+        }
+    }
+};
+
+let currentQuestion = 0;
+let answers = {};
+let userStatus = "single";
+
+function startQuiz() {
+    document.getElementById('landing').style.display = 'none';
+    document.getElementById('quiz').style.display = 'block';
+    renderQuestion();
+}
+
+function renderQuestion() {
+    const q = questions[currentQuestion];
+    const progress = ((currentQuestion + 1) / questions.length) * 100;
+    
+    // Check if question has dynamic text based on status
+    let questionText = q.text;
+    let questionDetails = q.details;
+    
+    if (q.dynamic && typeof q.text === 'function') {
+        questionText = q.text();
+    }
+    if (q.dynamic && typeof q.details === 'function') {
+        questionDetails = q.details();
+    }
+    
+    document.getElementById('progressBar').style.width = progress + '%';
+    document.getElementById('progressText').textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+    document.getElementById('scenarioLabel').textContent = q.scenario;
+    document.getElementById('questionText').textContent = questionText;
+    document.getElementById('scenarioDetails').textContent = questionDetails;
+    
+    const container = document.getElementById('optionsContainer');
+    container.innerHTML = '';
+    
+    q.options.forEach((opt, idx) => {
+        const div = document.createElement('div');
+        div.className = 'option';
+        div.onclick = () => selectOption(idx, div);
+        div.innerHTML = `
+            <div class="option-emoji">${['💭', '✨', '🎭', '🔮'][idx]}</div>
+            <div class="option-text">${opt.text}</div>
+        `;
+        container.appendChild(div);
+    });
+    
+    // Animation reset
+    const card = document.getElementById('questionCard');
+    card.style.animation = 'none';
+    setTimeout(() => card.style.animation = 'cardEnter 0.5s ease-out', 10);
+    
+    updateNavButtons();
+}
+
+function selectOption(idx, element) {
+    document.querySelectorAll('.option').forEach(el => el.classList.remove('selected'));
+    element.classList.add('selected');
+    answers[currentQuestion] = idx;
+    
+    // Track relationship status from first question
+    if (currentQuestion === 0) {
+        const statusMap = ["single", "taken", "complicated", "healing"];
+        userStatus = statusMap[idx] || "single";
+    }
+    
+    document.getElementById('nextBtn').disabled = false;
+}
+
+function nextQuestion() {
+    if (currentQuestion < questions.length - 1) {
+        currentQuestion++;
+        renderQuestion();
+    } else {
+        showLoading();
+    }
+}
+
+function previousQuestion() {
+    if (currentQuestion > 0) {
+        currentQuestion--;
+        renderQuestion();
+    }
+}
+
+function updateNavButtons() {
+    document.getElementById('prevBtn').disabled = currentQuestion === 0;
+    document.getElementById('nextBtn').disabled = answers[currentQuestion] === undefined;
+    document.getElementById('nextBtn').textContent = currentQuestion === questions.length - 1 ? 'See Results ✨' : 'Next →';
+}
+
+function showLoading() {
+    document.getElementById('quiz').style.display = 'none';
+    document.getElementById('loading').style.display = 'block';
+    
+    setTimeout(() => {
+        calculateResults();
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('results').style.display = 'block';
+        
+        // Generate QR Code
+        generateQRCode();
+        
+        // Animate compatibility bar
+        setTimeout(() => {
+            const compatFill = document.getElementById('compatFill');
+            if (compatFill) compatFill.style.width = '85%';
+        }, 500);
+    }, 2000);
+}
+
+function generateQRCode() {
+    const currentUrl = window.location.href;
+    const qrCodeImg = document.getElementById('qrCode');
+    const warningDiv = document.getElementById('qrLocalWarning');
+    
+    // Check if running locally (file:// protocol)
+    if (currentUrl.startsWith('file://')) {
+        qrCodeImg.style.display = 'none';
+        warningDiv.classList.remove('hidden');
+    } else {
+        // Generate QR code using QRServer API
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(currentUrl)}`;
+        qrCodeImg.src = qrUrl;
+        qrCodeImg.style.display = 'block';
+        warningDiv.classList.add('hidden');
+    }
+}
+
+function calculateResults() {
+    // Simple archetype matching based on answer patterns
+    let scores = {
+        anxious: 0,
+        avoidant: 0,
+        secure: 0,
+        physical: 0,
+        emotional: 0,
+        intellectual: 0
+    };
+    
+    questions.forEach((q, idx) => {
+        const ans = answers[idx];
+        if (ans !== undefined && q.options[ans].scores) {
+            const s = q.options[ans].scores;
+            if (s.attach === 'Anxious') scores.anxious++;
+            if (s.attach === 'Avoidant') scores.avoidant++;
+            if (s.attach === 'Secure') scores.secure++;
+            if (s.attach === 'Fearful') { scores.anxious++; scores.avoidant++; }
+            if (s.sex === 'High Physical' || s.bedroom === 'Dominant' || s.bedroom === 'Submissive') scores.physical++;
+            if (s.sex === 'Intimacy' || s.sex === 'Emotional') scores.emotional++;
+            if (s.sex === 'Mental' || s.type === 'Intellectual') scores.intellectual++;
+        }
+    });
+    
+    // Determine archetype
+    let resultKey = "The Devoted Romantic";
+    
+    if (scores.avoidant > scores.anxious && scores.physical > scores.emotional) {
+        resultKey = "The Passionate Storm";
+    } else if (scores.avoidant > scores.anxious) {
+        resultKey = "The Guarded Strategist";
+    } else if (scores.intellectual > scores.physical && scores.intellectual > scores.emotional) {
+        resultKey = "The Intellectual Seducer";
+    } else if (scores.anxious > 3 && scores.emotional > 2) {
+        resultKey = "The Healing Nurturer";
+    } else if (scores.avoidant > 2 && scores.anxious < 2) {
+        resultKey = "The Restless Explorer";
+    }
+    
+    const profile = archetypes[resultKey];
+    
+    // Fill in results
+    document.getElementById('resultMascot').textContent = profile.mascot;
+    document.getElementById('archetypeName').textContent = resultKey;
+    document.getElementById('archetypeTagline').textContent = profile.tagline;
+    
+    // Set relationship badge
+    const badge = document.getElementById('relationshipBadge');
+    if (userStatus === "single" || userStatus === "healing") {
+        badge.textContent = "Single Mode 💫";
+        badge.className = "relationship-badge single";
+        document.getElementById('singleInsightBox').classList.remove('hidden');
+        document.getElementById('relationshipInsightBox').classList.add('hidden');
+        document.getElementById('singleReason').textContent = profile.single;
+    } else {
+        badge.textContent = userStatus === "complicated" ? "It's Complicated 💫" : "Relationship Mode 💕";
+        badge.className = "relationship-badge taken";
+        document.getElementById('singleInsightBox').classList.add('hidden');
+        document.getElementById('relationshipInsightBox').classList.remove('hidden');
+        document.getElementById('relationshipInsight').textContent = profile.relationship;
+    }
+    
+    document.getElementById('loveTitle').textContent = profile.love.title;
+    document.getElementById('loveDesc').textContent = profile.love.desc;
+    
+    document.getElementById('sexTitle').textContent = profile.sex.title;
+    document.getElementById('sexDesc').textContent = profile.sex.desc;
+    
+    document.getElementById('attachTitle').textContent = profile.attach.title;
+    document.getElementById('attachDesc').textContent = profile.attach.desc;
+    
+    document.getElementById('typeTitle').textContent = profile.type.title;
+    document.getElementById('typeDesc').textContent = profile.type.desc;
+    
+    document.getElementById('secretWeapon').textContent = profile.weapon;
+    document.getElementById('winHeart').textContent = profile.win;
+    
+    // Fill compatibility matrix
+    const compatGrid = document.getElementById('compatibilityGrid');
+    compatGrid.innerHTML = `
+        <div class="compat-card best">
+            <div class="compat-emoji">${profile.compatibility.best.emoji}</div>
+            <div class="compat-type">💚 Best Match</div>
+            <div class="compat-name">${profile.compatibility.best.name}</div>
+            <div class="compat-desc">${profile.compatibility.best.desc}</div>
+        </div>
+        <div class="compat-card good">
+            <div class="compat-emoji">${profile.compatibility.good.emoji}</div>
+            <div class="compat-type">💙 Good Match</div>
+            <div class="compat-name">${profile.compatibility.good.name}</div>
+            <div class="compat-desc">${profile.compatibility.good.desc}</div>
+        </div>
+        <div class="compat-card challenging">
+            <div class="compat-emoji">${profile.compatibility.challenging.emoji}</div>
+            <div class="compat-type">💛 Challenging</div>
+            <div class="compat-name">${profile.compatibility.challenging.name}</div>
+            <div class="compat-desc">${profile.compatibility.challenging.desc}</div>
+        </div>
+        <div class="compat-card avoid">
+            <div class="compat-emoji">${profile.compatibility.avoid.emoji}</div>
+            <div class="compat-type">❌ Avoid</div>
+            <div class="compat-name">${profile.compatibility.avoid.name}</div>
+            <div class="compat-desc">${profile.compatibility.avoid.desc}</div>
+        </div>
+    `;
+}
+
+function restartQuiz() {
+    currentQuestion = 0;
+    answers = {};
+    userStatus = "single";
+    document.getElementById('results').style.display = 'none';
+    document.getElementById('landing').style.display = 'block';
+    window.scrollTo(0, 0);
+}
+</script>
+
+</body>
+</html>
